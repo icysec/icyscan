@@ -588,7 +588,6 @@ IcyScan v1.0 is functional and works well for my needs, but there are always mor
 
 **Included Files:**
 - `README.md` - This file (complete usage guide)
-- `CONFIG_GUIDE.md` - Configuration examples and best practices
 - `icyscan_config.yaml` - Configuration template
 
 **Configuration:**

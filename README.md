@@ -6,7 +6,7 @@
 
 IcyScan is a network enumeration framework I built to automate the tedious parts of reconnaissance. It's designed to be fast, thorough, and easy to configure for different scenarios (CTF, pentesting, bug bounty, etc.).
 
-**New in v1.1:** Interactive CLI mode for modular, Metasploit-style enumeration!
+**New in v1.1:** Interactive CLI mode for modular, customizable enumeration!
 
 ---
 
@@ -106,7 +106,7 @@ Interactive mode gives you **modular control** over the enumeration process - pe
 - ✅ Run only the scans you need
 - ✅ Test specific services without full enumeration
 - ✅ Results stay in memory (no re-scanning)
-- ✅ Metasploit-style command interface
+- ✅ Interactive command interface
 - ✅ Command history with arrow keys
 - ✅ Random ASCII art banners at startup
 
@@ -267,7 +267,7 @@ Total Time: ~20-30 minutes (with parallelization)
 ✅ **Modular testing** - Run only specific scans/enumeration  
 ✅ **Command history** - Arrow keys to navigate previous commands  
 ✅ **State persistence** - Results stay in memory between commands  
-✅ **Random banners** - 6 different ASCII art banners (Metasploit-style)  
+✅ **Random banners** - 6 different ASCII art banners  
 ✅ **Action-based commands** - Clear, intuitive command structure  
 ✅ **Built-in help** - Tutorial and command help system  
 ✅ **Tab completion** - cmd2 library for enhanced UX  
@@ -738,7 +738,7 @@ sudo umount Loot/NFS_Mounts/*
 ## 🚀 Future Development
 
 **Completed in v1.1:**
-- ✅ Interactive CLI mode (Metasploit-style)
+- ✅ Interactive CLI mode
 - ✅ Modular command structure
 - ✅ Random ASCII art banners
 - ✅ Command history and tab completion

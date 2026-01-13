@@ -153,7 +153,7 @@ Type {Colors.CYAN}help{Colors.END} for all commands or {Colors.CYAN}tutorial{Col
         self.session = {
             'target': None,
             'threads': 5,
-            'output_dir': 'Scans',
+            'output_dir': 'IcyScan',
             'scanner': None,
             'scan_complete': False
         }
@@ -700,7 +700,7 @@ def main():
         parser = argparse.ArgumentParser()
         parser.add_argument('-t', '--target', help='Target IP or hostname')
         parser.add_argument('--threads', type=int, default=5, help='Number of threads')
-        parser.add_argument('-o', '--output', default='Scans', help='Output directory')
+        parser.add_argument('-o', '--output', default='IcyScan', help='Output directory')
         args = parser.parse_args()
         
         if args.target:

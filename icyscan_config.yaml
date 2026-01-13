@@ -1,0 +1,430 @@
+# IcyScan Configuration File
+# Customize wordlists, credentials, timeouts, and other settings for each tool
+
+# ============================================================
+# GLOBAL SETTINGS
+# ============================================================
+global:
+  threads: 8                    # Number of concurrent threads (recommended: 8-10 for 16GB RAM)
+  timeout: 600                  # Default timeout for commands (seconds)
+  output_base: "Scans"          # Base output directory
+
+# ============================================================
+# NMAP SETTINGS
+# ============================================================
+nmap:
+  quick_scan:
+    enabled: true
+    flags: "-T4 -F"             # Fast scan of top 100 ports
+    stats_interval: "2s"        # Progress update interval
+  
+  service_scan:
+    enabled: true
+    flags: "-sV -sC -T4"        # Service version + default scripts
+    stats_interval: "10s"
+  
+  full_scan:
+    enabled: true
+    flags: "-sV -sC -T4 -p-"    # All ports + service detection
+    background: true            # Run in background
+    stats_interval: "30s"
+    
+  # Additional Nmap scripts to run (optional)
+  extra_scripts:
+    - "vuln"                    # Vulnerability detection scripts
+    # - "auth"                  # Authentication scripts
+    # - "discovery"             # Service discovery scripts
+
+# ============================================================
+# SUBDOMAIN ENUMERATION
+# ============================================================
+subdomains:
+  ffuf:
+    enabled: true
+    wordlists:                  # Tried in order, first found is used
+      - "/usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt"
+      - "/usr/share/wordlists/dirb/common.txt"
+      - "/usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt"
+    threads: 50
+    timeout: 3
+    match_codes:
+      - 200
+      - 204
+      - 301
+      - 302
+      - 307
+      - 401
+      - 403
+  
+  gobuster:
+    enabled: true
+    wordlists:                  # Same wordlist as ffuf
+      - "/usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt"
+      - "/usr/share/wordlists/dirb/common.txt"
+    threads: 50
+    append_domain: true
+
+# ============================================================
+# FTP ENUMERATION
+# ============================================================
+ftp:
+  enabled: true
+  timeout: 10
+  
+  # Anonymous login attempts
+  anonymous:
+    enabled: true
+    usernames:
+      - "anonymous"
+      - "ftp"
+    passwords:
+      - "anonymous@"
+      - "ftp@"
+      - ""
+  
+  # File download settings
+  download:
+    enabled: true
+    max_files: 50               # Maximum files to download
+    max_file_size: 10485760     # 10MB in bytes
+    max_depth: 3                # Directory traversal depth
+    
+    # File extensions to prioritize for download
+    interesting_extensions:
+      - ".txt"
+      - ".pdf"
+      - ".doc"
+      - ".docx"
+      - ".xls"
+      - ".xlsx"
+      - ".conf"
+      - ".config"
+      - ".ini"
+      - ".xml"
+      - ".json"
+      - ".sh"
+      - ".bat"
+      - ".ps1"
+      - ".py"
+      - ".php"
+      - ".asp"
+      - ".aspx"
+      - ".jsp"
+      - ".sql"
+      - ".db"
+      - ".bak"
+      - ".log"
+      - ".key"
+      - ".pem"
+      - ".crt"
+      - ".cer"
+
+# ============================================================
+# NFS ENUMERATION
+# ============================================================
+nfs:
+  enabled: true
+  timeout: 30
+  
+  # Mount options
+  auto_mount: true              # Automatically mount discovered shares
+  mount_location: "Loot/NFS_Mounts"  # Where to mount shares
+  
+  # NFS versions to try
+  try_nfsv3: true
+  try_nfsv4: true
+  
+  # Mount options
+  mount_options:
+    - "nolock"                  # Don't use NLM locking
+    # - "ro"                    # Read-only (safer)
+    # - "soft"                  # Soft mount (fail on timeout)
+    # - "timeo=10"              # Timeout in deciseconds
+  
+  # File listing
+  list_contents: true
+  max_list_items: 100           # Maximum items to list per directory
+  
+  # Interesting file detection
+  interesting_extensions:
+    - ".txt"
+    - ".conf"
+    - ".key"
+    - ".pem"
+    - ".sh"
+    - ".xml"
+    - ".ini"
+    - ".password"
+    - ".secret"
+    - ".backup"
+    - ".bak"
+  
+  # Cleanup reminder
+  remind_unmount: true          # Warn user to unmount shares
+
+# ============================================================
+# SMB/NETEXEC ENUMERATION
+# ============================================================
+smb:
+  enabled: true
+  
+  # Null session enumeration
+  null_session:
+    enabled: true
+    enumerate_shares: true
+    enumerate_users: true
+    enumerate_groups: true
+    enumerate_password_policy: true
+    rid_brute: true
+    rid_brute_timeout: 300      # 5 minutes
+  
+  # Authenticated enumeration (if credentials found)
+  authenticated:
+    enabled: true
+    # Credentials to try (leave empty for null session only)
+    credentials:
+      # - username: "guest"
+      #   password: ""
+      # - username: "administrator"
+      #   password: "Password123!"
+  
+  # SMB signing check
+  check_signing: true
+
+# ============================================================
+# LDAP/NETEXEC ENUMERATION
+# ============================================================
+ldap:
+  enabled: true
+  
+  # Anonymous LDAP bind
+  anonymous_bind:
+    enabled: true
+    enumerate_users: true
+    enumerate_groups: true
+  
+  # Authenticated LDAP (if credentials found)
+  authenticated:
+    enabled: true
+    credentials: []             # Same format as SMB
+
+# ============================================================
+# NIKTO WEB SCANNER
+# ============================================================
+nikto:
+  enabled: true
+  timeout: 300                  # 5 minutes per target
+  
+  # Scan settings
+  max_time: "5m"                # Maximum scan time per URL
+  format: "txt"                 # Output format
+  
+  # Tuning options (uncomment to enable)
+  # tuning:
+  #   - "1"                     # Interesting files
+  #   - "2"                     # Misconfiguration
+  #   - "3"                     # Information disclosure
+  #   - "4"                     # Injection
+  #   - "6"                     # DOS
+  
+  # Scan targets
+  scan_main_target: true
+  scan_domains: true
+  scan_subdomains: true
+  max_subdomains: 10            # Limit subdomain scans to avoid excessive time
+  
+  # Ports to scan
+  web_ports:
+    - 80
+    - 443
+    - 8080
+    - 8443
+    - 8000
+    - 8888
+    - 3000
+    - 5000
+
+# ============================================================
+# FEROXBUSTER DIRECTORY FUZZING
+# ============================================================
+feroxbuster:
+  enabled: true
+  timeout: 600                  # 10 minutes per target
+  
+  # Wordlists (tried in order)
+  wordlists:
+    - "/usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt"
+    - "/usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt"
+    - "/usr/share/wordlists/dirb/common.txt"
+    - "/usr/share/seclists/Discovery/Web-Content/common.txt"
+  
+  # Scan settings
+  threads: 50
+  depth: 2                      # Directory depth
+  auto_bail: true               # Stop on too many errors
+  random_agent: true
+  insecure: true                # Skip SSL verification
+  
+  # Status codes to include
+  status_codes:
+    - 200
+    - 204
+    - 301
+    - 302
+    - 307
+    - 401
+    - 403
+  
+  # File extensions to append (optional)
+  extensions:
+    # - "php"
+    # - "html"
+    # - "txt"
+    # - "asp"
+    # - "aspx"
+    # - "jsp"
+  
+  # Scan targets
+  scan_main_target: true
+  scan_domains: true
+  scan_subdomains: true         # Scans ALL subdomains (feroxbuster is fast)
+  
+  # Keywords for interesting path detection
+  interesting_keywords:
+    - "admin"
+    - "login"
+    - "dashboard"
+    - "config"
+    - "backup"
+    - "upload"
+    - "api"
+    - "secret"
+    - "private"
+    - "internal"
+    - ".git"
+    - ".env"
+    - "password"
+    - "credentials"
+    - "key"
+    - "token"
+    - "swagger"
+    - "graphql"
+
+# ============================================================
+# SEARCHSPLOIT (EXPLOIT SEARCH)
+# ============================================================
+exploits:
+  enabled: true
+  search_services: true         # Search for exploits based on discovered services
+  
+  # Additional manual searches (optional)
+  manual_searches:
+    # - "Apache 2.4.49"
+    # - "ProFTPD 1.3.5"
+
+# ============================================================
+# CREDENTIALS & AUTHENTICATION
+# ============================================================
+credentials:
+  # Global credentials to try across all services
+  # These will be used for SMB, LDAP, FTP, etc.
+  
+  common_usernames:
+    - "admin"
+    - "administrator"
+    - "root"
+    - "user"
+    - "test"
+    - "guest"
+    - "backup"
+  
+  common_passwords:
+    - ""                        # Empty password
+    - "admin"
+    - "password"
+    - "Password123!"
+    - "123456"
+    - "root"
+    - "admin123"
+  
+  # Specific credentials (higher priority)
+  specific:
+    # - service: "ftp"
+    #   username: "ftpuser"
+    #   password: "ftppass123"
+    # - service: "smb"
+    #   username: "smbuser"
+    #   password: "smbpass123"
+
+# ============================================================
+# LOOT EXTRACTION
+# ============================================================
+loot:
+  # Keywords to look for in scan outputs
+  password_keywords:
+    - "password"
+    - "passwd"
+    - "pwd"
+    - "pass"
+    - "credential"
+    - "secret"
+    - "token"
+    - "api_key"
+    - "apikey"
+  
+  username_keywords:
+    - "username"
+    - "user"
+    - "login"
+    - "account"
+  
+  file_keywords:
+    - "id_rsa"
+    - "id_dsa"
+    - ".pem"
+    - ".key"
+    - ".crt"
+    - ".pfx"
+    - "authorized_keys"
+    - "known_hosts"
+    - ".env"
+    - "config.php"
+    - "wp-config"
+    - "web.config"
+
+# ============================================================
+# ADVANCED OPTIONS
+# ============================================================
+advanced:
+  # Progress bars (requires tqdm)
+  progress_bars: true
+  
+  # Logging
+  log_level: "INFO"             # DEBUG, INFO, WARNING, ERROR
+  
+  # Display updates
+  live_display: true
+  display_refresh_rate: 1       # Seconds between display updates
+  
+  # Parallel execution
+  parallel_service_enum: true
+  parallel_subdomain_enum: true
+  
+  # Background tasks
+  background_full_scan: true
+  
+  # Error handling
+  continue_on_error: true       # Continue even if a tool fails
+  retry_failed: false           # Retry failed commands
+  retry_count: 1
+
+# ============================================================
+# CUSTOM COMMANDS (FUTURE)
+# ============================================================
+custom:
+  # Add your own custom enumeration commands here
+  # Format:
+  # - name: "Custom Tool"
+  #   command: "custom-tool -flag {target}"
+  #   output: "custom_tool_output.txt"
+  #   enabled: false

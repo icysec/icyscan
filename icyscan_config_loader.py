@@ -56,7 +56,7 @@ class IcyScanConfig:
             "global": {
                 "threads": 5,
                 "timeout": 600,
-                "output_base": "Scans"
+                "output_base": "IcyScan"
             },
             "nmap": {
                 "quick_scan": {"enabled": True},

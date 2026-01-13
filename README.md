@@ -1,10 +1,37 @@
 # 🧊 IcyScan - Advanced Network Enumeration Framework
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Release:** January 2026  
 **Purpose:** Automated reconnaissance and enumeration for penetration testing
 
 IcyScan is a network enumeration framework I built to automate the tedious parts of reconnaissance. It's designed to be fast, thorough, and easy to configure for different scenarios (CTF, pentesting, bug bounty, etc.).
+
+**New in v1.1:** Interactive CLI mode for modular, Metasploit-style enumeration!
+
+---
+
+## 🎯 Two Ways to Use IcyScan
+
+### **1. Original CLI Mode (v1.0)** - Automated Full Scans
+Perfect for quick, complete enumeration in one command.
+
+```bash
+sudo ./icyscan.py -t 10.10.10.10 --threads 10
+```
+
+### **2. Interactive Mode (v1.1)** - Modular Testing
+Perfect for manual pentesting with granular control.
+
+```bash
+sudo python3 icyscan_interactive.py
+
+icyscan> set target 10.10.10.10
+icyscan> scan quick
+icyscan> enum smb
+icyscan> show loot
+```
+
+Choose the mode that fits your workflow!
 
 ---
 
@@ -14,7 +41,7 @@ IcyScan is a network enumeration framework I built to automate the tedious parts
 
 ```bash
 # 1. Install Python dependencies
-pip install tqdm pyyaml --break-system-packages
+pip install tqdm pyyaml cmd2 --break-system-packages
 
 # 2. Install required tools (if not already installed)
 sudo apt update
@@ -26,13 +53,15 @@ pipx install netexec
 pip install netexec --break-system-packages
 
 # 4. Make executable
-chmod +x icyscan.py
+chmod +x icyscan.py icyscan_interactive.py
 
 # 5. Run with sudo (required for NFS mounting and /etc/hosts)
 sudo ./icyscan.py -t 10.10.10.10
+# OR
+sudo python3 icyscan_interactive.py
 ```
 
-### **Basic Usage**
+### **Basic Usage - Original CLI Mode**
 
 ```bash
 # Scan single target with defaults (5 threads)
@@ -48,9 +77,164 @@ sudo ./icyscan.py -t example.htb --threads 8
 sudo ./icyscan.py -t 10.10.10.10 -o MyResults
 ```
 
+### **Basic Usage - Interactive Mode**
+
+```bash
+# Launch interactive console
+sudo python3 icyscan_interactive.py
+
+# Inside the console:
+icyscan> set target 10.10.10.10     # Set your target
+icyscan> set threads 10              # Adjust threads
+icyscan> scan quick                  # Quick port scan
+icyscan> show ports                  # View results
+icyscan> enum smb                    # Enumerate SMB
+icyscan> enum all                    # Enumerate all services
+icyscan> show loot                   # View findings
+icyscan> exit                        # Exit when done
+```
+
 ---
 
-## 📊 What IcyScan Does
+## 🎮 Interactive Mode (v1.1)
+
+### **Why Use Interactive Mode?**
+
+Interactive mode gives you **modular control** over the enumeration process - perfect for manual pentesting where you want to explore targets step-by-step.
+
+**Benefits:**
+- ✅ Run only the scans you need
+- ✅ Test specific services without full enumeration
+- ✅ Results stay in memory (no re-scanning)
+- ✅ Metasploit-style command interface
+- ✅ Command history with arrow keys
+- ✅ Random ASCII art banners at startup
+
+### **Interactive Commands**
+
+**Configuration:**
+```bash
+set target <IP|hostname>    # Set target
+set threads <number>        # Set thread count (1-15)
+set output <directory>      # Set output directory
+options                     # Show current config
+```
+
+**Scanning:**
+```bash
+scan quick      # Quick port scan (top 100 ports)
+scan full       # Full port scan (all 65,535 ports)
+scan service    # Service detection on discovered ports
+scan web        # Web enumeration only
+scan all        # Complete enumeration (everything)
+```
+
+**Enumeration:**
+```bash
+enum smb        # Enumerate SMB with NetExec
+enum ldap       # Enumerate LDAP with NetExec
+enum ftp        # Enumerate FTP
+enum ssh        # Enumerate SSH
+enum nfs        # Enumerate NFS
+enum rdp        # Enumerate RDP
+enum winrm      # Enumerate WinRM
+enum mssql      # Enumerate MSSQL
+enum web        # Run Nikto + Feroxbuster
+enum all        # Enumerate all discovered services
+```
+
+**Results:**
+```bash
+show options    # Show configuration
+show ports      # Show discovered ports
+show services   # Show identified services
+show domains    # Show discovered domains
+show loot       # Show collected loot
+show exploits   # Show available exploits
+show vulns      # Show vulnerabilities
+```
+
+**Utilities:**
+```bash
+help                # List all commands
+help <command>      # Get help on specific command
+tutorial            # Show quick start guide
+banner              # Display random ASCII art
+clear               # Clear screen
+exit                # Exit (or 'quit')
+```
+
+### **Interactive Workflow Example**
+
+```bash
+$ sudo python3 icyscan_interactive.py
+
+    ▀█▀ █▀▀ █▄█ █▀ █▀▀ ▄▀█ █▄░█
+    ░█░ █▄▄ ░█░ ▄█ █▄▄ █▀█ █░▀█
+    ═══════════════════════════
+    ❄ Network Enumeration ❄
+
+IcyScan v1.1 - Interactive Enumeration Framework
+
+# Set target and scan
+icyscan> set target 10.10.10.10
+[+] Target set to: 10.10.10.10
+
+icyscan> scan quick
+[*] Running quick port scan...
+[████████████████████] 100%
+[+] Found 5 open ports: 21, 22, 80, 445, 3389
+
+# View results
+icyscan> show ports
+PORT    STATE   SERVICE
+21      open    ftp
+22      open    ssh
+80      open    http
+445     open    microsoft-ds
+3389    open    ms-wbt-server
+
+# Enumerate specific service
+icyscan> enum smb
+[*] Enumerating SMB...
+[+] NULL SESSION AVAILABLE!
+[+] Found 3 shares: IPC$, ADMIN$, backup
+[+] Found 8 users
+
+# Check findings
+icyscan> show loot
+[+] SMB Null Session Available
+[+] SMB Share: backup (READ,WRITE)
+[+] SMB User: john.doe
+[+] SMB User: jane.smith
+
+# Continue enumeration
+icyscan> enum web
+[*] Running Nikto on http://10.10.10.10...
+[*] Running Feroxbuster...
+
+icyscan> show exploits
+[+] MS17-010 - EternalBlue (SMB)
+[+] CVE-2019-0708 - BlueKeep (RDP)
+
+icyscan> exit
+```
+
+### **When to Use Each Mode**
+
+| Scenario | Mode | Why |
+|----------|------|-----|
+| Quick full enumeration | **Original CLI** | One command, everything automated |
+| Manual pentesting | **Interactive** | Modular control, explore as you go |
+| CTF box (unknown target) | **Interactive** | Scan quick → investigate → enumerate |
+| Bug bounty (specific target) | **Original CLI** | Fast, thorough, automated |
+| Learning/practicing | **Interactive** | See each step, understand flow |
+| Scripting/automation | **Original CLI** | Easy to script, single command |
+| Testing specific services | **Interactive** | Run only what you need |
+
+---
+
+## 📊 What IcyScan Does (Original CLI Mode)
 
 ### **Automated Workflow**
 
@@ -69,6 +253,7 @@ Total Time: ~20-30 minutes (with parallelization)
 
 ### **Key Features**
 
+**Core Capabilities:**
 ✅ **Multi-threaded** - Run multiple tasks simultaneously  
 ✅ **Background scanning** - Full Nmap runs while other tasks execute  
 ✅ **Progress bars** - Real-time progress for all operations  
@@ -77,6 +262,15 @@ Total Time: ~20-30 minutes (with parallelization)
 ✅ **Organized output** - Clean directory structure  
 ✅ **Configurable** - YAML config file for all settings  
 ✅ **Live updates** - Real-time display of findings  
+
+**Interactive Mode (v1.1):**
+✅ **Modular testing** - Run only specific scans/enumeration  
+✅ **Command history** - Arrow keys to navigate previous commands  
+✅ **State persistence** - Results stay in memory between commands  
+✅ **Random banners** - 6 different ASCII art banners (Metasploit-style)  
+✅ **Action-based commands** - Clear, intuitive command structure  
+✅ **Built-in help** - Tutorial and command help system  
+✅ **Tab completion** - cmd2 library for enhanced UX  
 
 ---
 
@@ -322,6 +516,39 @@ THREADS:     10 concurrent tasks
 
 ---
 
+## 📦 Files Included
+
+### **Core Files**
+- `icyscan.py` - Original CLI mode (automated full scans)
+- `icyscan_interactive.py` - Interactive CLI mode (modular testing)
+- `icyscan_config.yaml` - Configuration template
+- `icyscan_config_loader.py` - Config parser
+- `README.md` - This file
+
+### **Which Files Do You Need?**
+
+**Minimal Setup (Original CLI Only):**
+```
+icyscan.py
+icyscan_config.yaml
+icyscan_config_loader.py
+```
+
+**Full Setup (Both Modes):**
+```
+icyscan.py
+icyscan_interactive.py
+icyscan_config.yaml
+icyscan_config_loader.py
+```
+
+**Note:** Interactive mode requires the `cmd2` library:
+```bash
+pip install cmd2 --break-system-packages
+```
+
+---
+
 ## 🐛 Troubleshooting
 
 ### **Progress bars not showing?**
@@ -353,6 +580,26 @@ sudo ./icyscan.py -t target
 # Install NFS client
 sudo apt install nfs-common
 ```
+
+### **Interactive mode issues?**
+```bash
+# cmd2 module not found
+pip install cmd2 --break-system-packages
+
+# Can't import icyscan
+# Make sure icyscan.py is in the same directory as icyscan_interactive.py
+ls -la icyscan.py icyscan_interactive.py
+
+# Banner not displaying correctly
+# Make sure terminal supports UTF-8
+export LANG=en_US.UTF-8
+```
+
+### **Commands not working in interactive mode?**
+- Use full command syntax: `scan quick` not `quick`
+- Use full command syntax: `show loot` not `loot`
+- Type `help` to see all available commands
+- Type `tutorial` for a quick start guide
 
 ---
 
@@ -490,7 +737,13 @@ sudo umount Loot/NFS_Mounts/*
 
 ## 🚀 Future Development
 
-IcyScan v1.0 is functional and works well for my needs, but there are always more features to add. Here's what I'm considering for future versions:
+**Completed in v1.1:**
+- ✅ Interactive CLI mode (Metasploit-style)
+- ✅ Modular command structure
+- ✅ Random ASCII art banners
+- ✅ Command history and tab completion
+
+IcyScan v1.1 is functional and works well for my needs, but there are always more features to add. Here's what I'm considering for future versions:
 
 ### **Web Application Security Testing**
 
@@ -590,11 +843,10 @@ IcyScan v1.0 is functional and works well for my needs, but there are always mor
 - `README.md` - This file (complete usage guide)
 - `icyscan_config.yaml` - Configuration template
 
-**Configuration:**
-See `CONFIG_GUIDE.md` for detailed examples on customizing IcyScan for different scenarios (CTF, pentesting, bug bounty, etc.)
-
 ---
 
 ## 🎉 Happy Scanning!
+
+IcyScan makes enumeration faster, cleaner, and more efficient. Customize it to your needs and let it handle the tedious work!
 
 **Remember: Always scan responsibly! 🔐**

@@ -7,7 +7,7 @@
 global:
   threads: 8                    # Number of concurrent threads (recommended: 8-10 for 16GB RAM)
   timeout: 600                  # Default timeout for commands (seconds)
-  output_base: "Scans"          # Base output directory
+  output_base: "IcyScan"       # Base output directory
 
 # ============================================================
 # NMAP SETTINGS

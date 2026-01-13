@@ -169,10 +169,16 @@ exit                # Exit (or 'quit')
 ```bash
 $ sudo python3 icyscan_interactive.py
 
-    ▀█▀ █▀▀ █▄█ █▀ █▀▀ ▄▀█ █▄░█
-    ░█░ █▄▄ ░█░ ▄█ █▄▄ █▀█ █░▀█
-    ═══════════════════════════
-    ❄ Network Enumeration ❄
+  d8,                                                    
+ `8P                                                     
+                                                         
+  88b d8888b?88   d8P  .d888b, d8888b d888b8b    88bd88b 
+  88Pd8P' `Pd88   88   ?8b,   d8P' `Pd8P' ?88    88P' ?8b
+ d88 88b    ?8(  d88     `?8b 88b    88b  ,88b  d88   88P
+d88' `?888P'`?88P'?8b `?888P' `?888P'`?88P'`88bd88'   88b
+                   )88                                   
+                  ,d8P                                   
+               `?888P' 
 
 IcyScan v1.1 - Interactive Enumeration Framework
 

@@ -598,6 +598,4 @@ See `CONFIG_GUIDE.md` for detailed examples on customizing IcyScan for different
 
 ## 🎉 Happy Scanning!
 
-IcyScan makes enumeration faster, cleaner, and more efficient. Customize it to your needs and let it handle the tedious work!
-
 **Remember: Always scan responsibly! 🔐**

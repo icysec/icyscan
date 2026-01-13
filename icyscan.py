@@ -17,6 +17,7 @@ import json
 import sys
 import os
 import time
+import random
 from datetime import datetime
 from typing import List, Dict, Optional
 import xml.etree.ElementTree as ET
@@ -45,10 +46,104 @@ class Colors:
     END = '\033[0m'
 
 
+# Multiple ASCII art banners (randomly selected at startup)
+BANNERS = [
+    # Banner 1 - Original
+    f"""{Colors.CYAN}{Colors.BOLD}
+ ██▓ ▄████▄ ▓██   ██▓  ██████  ▄████▄   ▄▄▄       ███▄    █ 
+▓██▒▒██▀ ▀█  ▒██  ██▒▒██    ▒ ▒██▀ ▀█  ▒████▄     ██ ▀█   █ 
+▒██▒▒▓█    ▄  ▒██ ██░░ ▓██▄   ▒▓█    ▄ ▒██  ▀█▄  ▓██  ▀█ ██▒
+░██░▒▓▓▄ ▄██▒ ░ ▐██▓░  ▒   ██▒▒▓▓▄ ▄██▒░██▄▄▄▄██ ▓██▒  ▐▌██▒
+░██░▒ ▓███▀ ░ ░ ██▒▓░▒██████▒▒▒ ▓███▀ ░ ▓█   ▓██▒▒██░   ▓██░
+░▓  ░ ░▒ ▒  ░  ██▒▒▒ ▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░ ▒▒   ▓▒█░░ ▒░   ▒ ▒ 
+ ▒ ░  ░  ▒   ▓██ ░▒░ ░ ░▒  ░ ░  ░  ▒     ▒   ▒▒ ░░ ░░   ░ ▒░
+ ▒ ░░        ▒ ▒ ░░  ░  ░  ░  ░          ░   ▒      ░   ░ ░ 
+ ░  ░ ░      ░ ░           ░  ░ ░            ░  ░         ░ 
+    ░        ░ ░              ░                              
+{Colors.END}""",
+
+    # Banner 2 - 3D
+    rf"""{Colors.CYAN}{Colors.BOLD}
+                                                                              ,--. 
+   ,---,  ,----..                .--.--.     ,----..     ,---,              ,--.'| 
+,`--.' | /   /   \        ,---, /  /    '.  /   /   \   '  .' \         ,--,:  : | 
+|   :  :|   :     :      /_ ./||  :  /`. / |   :     : /  ;    '.    ,`--.'`|  ' : 
+:   |  '.   |  ;. /,---, |  ' :;  |  |--`  .   |  ;. /:  :       \   |   :  :  | | 
+|   :  |.   ; /--`/___/ \.  : ||  :  ;_    .   ; /--` :  |   /\   \  :   |   \ | : 
+'   '  ;;   | ;    .  \  \ ,' ' \  \    `. ;   | ;    |  :  ' ;.   : |   : '  '; | 
+|   |  ||   : |     \  ;  `  ,'  `----.   \|   : |    |  |  ;/  \   \'   ' ;.    ; 
+'   :  ;.   | '___   \  \    '   __ \  \  |.   | '___ '  :  | \  \ ,'|   | | \   | 
+|   |  ''   ; : .'|   '  \   |  /  /`--'  /'   ; : .'||  |  '  '--'  '   : |  ; .' 
+'   :  |'   | '/  :    \  ;  ; '--'.     / '   | '/  :|  :  :        |   | '`--'   
+;   |.' |   :    /      :  \  \  `--'---'  |   :    / |  | ,'        '   : |       
+'---'    \   \ .'        \  ' ;             \   \ .'  `--''          ;   |.'       
+          `---`           `--`               `---`                   '---'         
+{Colors.END}""",
+
+    # Banner 3 - Snowflake
+    f"""{Colors.CYAN}{Colors.BOLD}
+        ▄█     ▄████████ ▄██   ▄      ▄████████  ▄████████    ▄████████ ███▄▄▄▄   
+       ███    ███    ███ ███   ██▄   ███    ███ ███    ███   ███    ███ ███▀▀▀██▄ 
+       ███▌   ███    █▀  ███▄▄▄███   ███    █▀  ███    █▀    ███    ███ ███   ███ 
+       ███▌   ███        ▀▀▀▀▀▀███   ███        ███          ███    ███ ███   ███ 
+       ███▌   ███        ▄██   ███ ▀███████████ ███        ▀███████████ ███   ███ 
+       ███    ███    █▄  ███   ███          ███ ███    █▄    ███    ███ ███   ███ 
+       ███    ███    ███ ███   ███    ▄█    ███ ███    ███   ███    ███ ███   ███ 
+       █▀     ██████████  ▀█████▀   ▄████████▀  ████████▀    ███    █▀   ▀█   █▀  
+{Colors.END}""",
+
+    # Banner 4 - Def Leppard
+    f"""{Colors.CYAN}{Colors.BOLD}
+                                                                       
+                                                                       
+            .,                   .      .,               L.            
+  t        ,Wt                  ;W     ,Wt               EW:        ,ft
+  Ej      i#D. f.     ;WE.     f#E    i#D.            .. E##;       t#E
+  E#,    f#f   E#,   i#G     .E#f    f#f             ;W, E###t      t#E
+  E#t  .D#i    E#t  f#f     iWW;   .D#i             j##, E#fE#f     t#E
+  E#t :KW,     E#t G#i     L##Lffi:KW,             G###, E#t D#G    t#E
+  E#t t#f      E#jEW,     tLLG##L t#f            :E####, E#t  f#E.  t#E
+  E#t  ;#G     E##E.        ,W#i   ;#G          ;W#DG##, E#t   t#K: t#E
+  E#t   :KE.   E#G         j#E.     :KE.       j###DW##, E#t    ;#W,t#E
+  E#t    .DW:  E#t       .D#j        .DW:     G##i,,G##, E#t     :K#D#E
+  E#t      L#, E#t      ,WK,           L#,  :K#K:   L##, E#t      .E##E
+  E#t       jt EE.      EG.             jt ;##D.    L##, ..         G#E
+  ,;.          t        ,                  ,,,      .,,              fE
+                                                                      ,
+{Colors.END}""",
+
+    # Banner 5 - Simple Block
+    f"""{Colors.CYAN}{Colors.BOLD}
+    ██╗ ██████╗██╗   ██╗███████╗ ██████╗ █████╗ ███╗   ██╗
+    ██║██╔════╝╚██╗ ██╔╝██╔════╝██╔════╝██╔══██╗████╗  ██║
+    ██║██║      ╚████╔╝ ███████╗██║     ███████║██╔██╗ ██║
+    ██║██║       ╚██╔╝  ╚════██║██║     ██╔══██║██║╚██╗██║
+    ██║╚██████╗   ██║   ███████║╚██████╗██║  ██║██║ ╚████║
+    ╚═╝ ╚═════╝   ╚═╝   ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝
+    ════════════════════════════════════════════════════════
+              Network Enumeration Framework v1.0
+{Colors.END}""",
+
+    # Banner 6 - x992
+    f"""{Colors.CYAN}{Colors.BOLD}
+  d8,                                                    
+ `8P                                                     
+                                                         
+  88b d8888b?88   d8P  .d888b, d8888b d888b8b    88bd88b 
+  88Pd8P' `Pd88   88   ?8b,   d8P' `Pd8P' ?88    88P' ?8b
+ d88 88b    ?8(  d88     `?8b 88b    88b  ,88b  d88   88P
+d88' `?888P'`?88P'?8b `?888P' `?888P'`?88P'`88bd88'   88b
+                   )88                                   
+                  ,d8P                                   
+               `?888P'                                   
+{Colors.END}""",
+]
+
+
 class IcyScan:
     """Main IcyScan enumeration framework"""
     
-    def __init__(self, target: str, output_dir: str = "Scans", threads: int = 5):
+    def __init__(self, target: str, output_dir: str = "IcyScan", threads: int = 5):
         self.target = target
         self.output_dir = output_dir
         self.threads = threads
@@ -73,21 +168,21 @@ class IcyScan:
         }
         
         # Create proper directory structure:
-        # TARGET/
+        # output_dir/TARGET/
         # ├── Loot/           (credentials, passwords, interesting findings)
         # ├── Exploits/       (exploit files, POCs)
-        # └── Scans/          (all scan outputs: nmap, nikto, feroxbuster, etc.)
+        # └── Logs/           (all scan outputs: nmap, nikto, feroxbuster, etc.)
         self.base_dir = f"{output_dir}/{target}"
         self.loot_dir = f"{self.base_dir}/Loot"
         self.exploits_dir = f"{self.base_dir}/Exploits"
-        self.scans_dir = f"{self.base_dir}/Scans"
+        self.scans_dir = f"{self.base_dir}/Logs"
         
         # Create all directories
         os.makedirs(self.loot_dir, exist_ok=True)
         os.makedirs(self.exploits_dir, exist_ok=True)
         os.makedirs(self.scans_dir, exist_ok=True)
         
-        # For backwards compatibility, keep scan_dir pointing to Scans/
+        # For backwards compatibility, keep scan_dir pointing to Logs/
         self.scan_dir = self.scans_dir
         
         self.display_banner()
@@ -390,19 +485,10 @@ class IcyScan:
     
     def get_banner_only(self):
         """Get just the banner without status"""
+        # Select random banner
+        banner = random.choice(BANNERS)
         return f"""
-{Colors.CYAN}{Colors.BOLD}
- ██▓ ▄████▄ ▓██   ██▓  ██████  ▄████▄   ▄▄▄       ███▄    █ 
-▓██▒▒██▀ ▀█  ▒██  ██▒▒██    ▒ ▒██▀ ▀█  ▒████▄     ██ ▀█   █ 
-▒██▒▒▓█    ▄  ▒██ ██░░ ▓██▄   ▒▓█    ▄ ▒██  ▀█▄  ▓██  ▀█ ██▒
-░██░▒▓▓▄ ▄██▒ ░ ▐██▓░  ▒   ██▒▒▓▓▄ ▄██▒░██▄▄▄▄██ ▓██▒  ▐▌██▒
-░██░▒ ▓███▀ ░ ░ ██▒▓░▒██████▒▒▒ ▓███▀ ░ ▓█   ▓██▒▒██░   ▓██░
-░▓  ░ ░▒ ▒  ░  ██▒▒▒ ▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░ ▒▒   ▓▒█░░ ▒░   ▒ ▒ 
- ▒ ░  ░  ▒   ▓██ ░▒░ ░ ░▒  ░ ░  ░  ▒     ▒   ▒▒ ░░ ░░   ░ ▒░
- ▒ ░░        ▒ ▒ ░░  ░  ░  ░  ░          ░   ▒      ░   ░ ░ 
- ░  ░ ░      ░ ░           ░  ░ ░            ░  ░         ░ 
-    ░        ░ ░              ░                              
-{Colors.END}
+{banner}
 {Colors.BOLD}═══════════════════════════════════════════════════════════════════════════════
                         Custom Enumeration Framework
                               Target: {Colors.GREEN}{self.target}{Colors.END}
@@ -2686,7 +2772,7 @@ domain names in /etc/hosts.
     )
     
     parser.add_argument("-t", "--target", required=True, help="Target IP or hostname")
-    parser.add_argument("-o", "--output", default="Scans", help="Output directory (default: Scans)")
+    parser.add_argument("-o", "--output", default="IcyScan", help="Output directory (default: IcyScan)")
     parser.add_argument("--threads", type=int, default=5, 
                        help="Number of concurrent threads (default: 5, recommended: 8-10 for 16GB RAM)")
     
